@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favour, Be My Valentine?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(-45deg, #ff758c, #ff7eb3, #ff6b9d, #ffc3a0);
+            background-size: 400% 400%;
+            animation: gradient 8s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Screen Transitions */
+        .screen {
+            display: none;
+            animation: fadeInScale 0.8s ease forwards;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.8) translateY(-50px);
+            }
+        }
+
+        /* Floating Elements */
+        .floating-stickers {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .sticker {
+            position: absolute;
+            font-size: 2.5rem;
+            animation: float 6s infinite ease-in-out;
+            opacity: 0.8;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+
+        /* Title & Text */
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 60px rgba(255, 107, 157, 0.6);
+            animation: heartbeat 1.5s infinite;
+            line-height: 1.2;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            font-weight: 300;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Images/GIFs */
+        .gif-container {
+            margin: 20px 0;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .gif-container img {
+            width: 220px;
+            height: 220px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 40px rgba(255, 107, 157, 0.6);
+            animation: imageFloat 3s ease-in-out infinite;
+            object-fit: cover;
+            max-width: 90vw;
+        }
+
+        @keyframes imageFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Buttons */
+        .buttons-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        button {
+            padding: 12px 35px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .yes {
+            background: linear-gradient(135deg, #ff416c, #ff6b9d);
+            color: white;
+            box-shadow: 0 0 30px rgba(255, 107, 157, 0.8);
+            position: relative;
+        }
+
+        .yes:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 50px rgba(255, 107, 157, 1);
+        }
+
+        .no {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            backdrop-filter: blur(10px);
+        }
+
+        .no:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ff416c;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        /* Final Message */
+        .final-message {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-top: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Responsive - Tablet */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.8rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .gif-container img {
+                width: 200px;
+                height: 200px;
+            }
+
+            button {
+                padding: 11px 30px;
+                font-size: 0.95rem;
+            }
+
+            .buttons-container {
+                gap: 12px;
+                margin-top: 20px;
+            }
+
+            .sticker {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Responsive - Mobile */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 10px;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+                margin-bottom: 12px;
+            }
+
+            .gif-container {
+                margin: 12px 0;
+            }
+
+            .gif-container img {
+                width: 160px;
+                height: 160px;
+                border-radius: 20px;
+            }
+
+            button {
+                padding: 10px 22px;
+                font-size: 0.85rem;
+            }
+
+            .buttons-container {
+                gap: 8px;
+                margin-top: 15px;
+            }
+
+            .final-message {
+                font-size: 1.1rem;
+                margin-top: 10px;
+            }
+
+            .sticker {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Responsive - Small Phone */
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 8px;
+            }
+
+            .subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 10px;
+            }
+
+            .gif-container img {
+                width: 140px;
+                height: 140px;
+            }
+
+            button {
+                padding: 9px 18px;
+                font-size: 0.8rem;
+            }
+
+            .final-message {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Floating Stickers Background -->
+    <div class="floating-stickers" id="stickers"></div>
+
+    <!-- SCREEN 1: Initial Question -->
+    <div class="screen active" id="s1">
+        <h1>Favour, Will You Be My Valentine?</h1>
+        <p class="subtitle">I promise to make you smile every single day...</p>
+        
+        <div class="gif-container">
+            <img src="romantic.jpg" alt="romantic">
+        </div>
+
+        <div class="buttons-container">
+            <button class="yes" onclick="handleYes(3)">YES</button>
+            <button class="no" onclick="handleNo(3)">NO</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: She Said NO - Begging -->
+    <div class="screen" id="s3">
+        <h1>Please Reconsider, Favour</h1>
+        <p class="subtitle">This is my heart right now...</p>
+        
+        <div class="gif-container">
+            <img src="sad_begging.jpg" alt="sad begging">
+        </div>
+
+        <div class="buttons-container">
+            <button class="yes" onclick="handleYes(5)">YES</button>
+            <button class="no" onclick="handleNo(5)">NO</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: Keep Begging -->
+    <div class="screen" id="s5">
+        <h1>Favour, One More Chance?</h1>
+        <p class="subtitle">I'll do anything to make you happy...</p>
+        
+        <div class="gif-container">
+            <img src="puppy_eyes.jpg" alt="begging cute">
+        </div>
+
+        <div class="buttons-container">
+            <button class="yes" onclick="handleYes(7)">YES!</button>
+            <button class="no" onclick="handleNo(7)">NO</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 4: Last Attempt -->
+    <div class="screen" id="s7">
+        <h1>Favour, I'm Not Giving Up</h1>
+        <p class="subtitle">You can't resist this cuteness...</p>
+        
+        <div class="gif-container">
+            <img src="cute_begging.jpg" alt="puppy eyes">
+        </div>
+
+        <div class="buttons-container">
+            <button class="yes" onclick="handleYes(9)">YES FINALLY</button>
+            <button class="no" onclick="handleNo(9)">NO</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 5: Final Acceptance -->
+    <div class="screen" id="s9">
+        <h1>Favour, Love Potion</h1>
+        <p class="subtitle">Drink this and you'll say YES...</p>
+        
+        <div class="gif-container">
+            <img src="magic_potion.jpg" alt="magic potion">
+        </div>
+
+        <div class="buttons-container">
+            <button class="yes" onclick="handleYes(10)">YES</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 6: VICTORY! -->
+    <div class="screen" id="s10">
+        <h1>FAVOUR, YOU SAID YES!</h1>
+        <p class="subtitle">You just made me the happiest person in the world!</p>
+        
+        <div class="gif-container">
+            <img src="celebration.jpg" alt="celebration">
+        </div>
+
+        <p class="final-message">I love you, Favour! Let's celebrate together</p>
+    </div>
+
+    <!-- Audio -->
+    <audio id="bgMusic" loop volume="0.3">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="successSound">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Initialize
+        const bgMusic = document.getElementById('bgMusic');
+        const successSound = document.getElementById('successSound');
+        let musicStarted = false;
+
+        function startMusic() {
+            if (!musicStarted) {
+                bgMusic.volume = 0.3;
+                bgMusic.play().catch(() => {});
+                musicStarted = true;
+            }
+        }
+
+        // Create floating stickers
+        function createStickers() {
+            const stickers = ['💕', '💖', '💝', '🌹', '✨', '💗', '💑', '🎀'];
+            const container = document.getElementById('stickers');
+            
+            for (let i = 0; i < 15; i++) {
+                const sticker = document.createElement('div');
+                sticker.className = 'sticker';
+                sticker.textContent = stickers[Math.floor(Math.random() * stickers.length)];
+                sticker.style.left = Math.random() * 100 + '%';
+                sticker.style.top = Math.random() * 100 + '%';
+                sticker.style.animation = `float ${5 + Math.random() * 4}s infinite ease-in-out`;
+                sticker.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(sticker);
+            }
+        }
+
+        // Confetti burst
+        function createConfetti() {
+            const colors = ['#ff416c', '#ff6b9d', '#ff7eb3', '#ffc3a0', '#ffffff'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.top = '0px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 15 + 5 + 'px';
+                confetti.style.height = confetti.style.width;
+                confetti.style.borderRadius = '50%';
+                
+                document.body.appendChild(confetti);
+                
+                const duration = Math.random() * 2 + 2;
+                const xMove = (Math.random() - 0.5) * window.innerWidth;
+                
+                confetti.animate([
+                    { transform: 'translateY(0) translateX(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight + 100}px) translateX(${xMove}px) rotate(720deg)`, opacity: 0 }
+                ], {
+                    duration: duration * 1000,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                });
+                
+                setTimeout(() => confetti.remove(), duration * 1000);
+            }
+        }
+
+        // Handle YES button
+        function handleYes(nextScreen) {
+            startMusic();
+            successSound.volume = 0.5;
+            successSound.play().catch(() => {});
+            
+            createConfetti();
+            switchScreen(nextScreen);
+        }
+
+        // Handle NO button
+        function handleNo(nextScreen) {
+            startMusic();
+            switchScreen(nextScreen);
+        }
+
+        // Switch screens
+        function switchScreen(screenNum) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(s => {
+                s.classList.remove('active');
+                s.style.animation = 'slideOut 0.4s ease forwards';
+            });
+
+            setTimeout(() => {
+                const activeScreen = document.getElementById('s' + screenNum);
+                if (activeScreen) {
+                    activeScreen.style.animation = 'fadeInScale 0.8s ease forwards';
+                    activeScreen.classList.add('active');
+                }
+            }, 200);
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            createStickers();
+        });
+
+        // Start music on first interaction
+        document.addEventListener('click', startMusic, { once: true });
+    </script>
+</body>
+</html>
